@@ -16,7 +16,7 @@ def get_current_date():
     return datetime.now().strftime("%Y-%m-%dT00:00:00")
 
 start = time.time()
-duration = 45
+duration = 28800 # Para que corra por 8hs
 todays_orders = []
 no_orders_notice = False
 
@@ -65,4 +65,4 @@ while time.time() < start + duration:
     except Exception as e:
         print(f"Error inesperado: {e}")
 
-    time.sleep(15)
+    time.sleep(1800) #Revisa las ordenes cada 30min
