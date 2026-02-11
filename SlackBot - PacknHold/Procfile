@@ -1,1 +1,1 @@
-worker: python -u SlackBot - PacknHold/app.py
+worker: python -u "SlackBot - PacknHold/app.py"
