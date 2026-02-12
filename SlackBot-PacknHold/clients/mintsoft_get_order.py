@@ -56,6 +56,13 @@ class MintsoftOrderClient:
             "Accept": "application/json",
         }
     
+    def get_clients(self) -> List[Dict[str, Any]]:
+        r = requests.get(
+            f"{self.BASE_URL}/api/Client",
+            headers=self.headers(),
+            timeout=30
+        )
+        return r.json()
     
     def _get_orders_combined(self) -> List[Dict[str, Any]]:
 

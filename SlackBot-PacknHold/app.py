@@ -16,7 +16,7 @@ def get_current_date():
     return datetime.now().strftime("%Y-%m-%dT00:00:00")
 
 start = time.time()
-duration = 28800 # Para que corra por 8hs
+duration = 10 # Para que corra por 8hs
 todays_orders = []
 no_orders_notice = False
 
@@ -24,6 +24,9 @@ ms_client = MintsoftOrderClient()
 
 while time.time() < start + duration:
     try:
+        print("Consultando clients...")
+        clients = ms_client.get_clients()
+
         print("Consultando órdenes...")
         orders = ms_client._get_orders_combined()
 
@@ -42,14 +45,19 @@ while time.time() < start + duration:
         #Si tiene algo, es que hay ordenes para despachar
         else:
             for order in orders_to_be_despatched:
+                order_id = order.get("ID")
                 order_number = order.get("OrderNumber")
+                order_client_id = order.get("ClientId")
                 items = order.get("TotalItems")
+
+                client_info = next((c for c in clients if c.get("ID") == order_client_id), None)
+                client_name = client_info.get("Name")
 
                 #Si hoy no se envio un mensaje al canal para esa orden:
                 if order_number not in todays_orders:
                     CLIENT.chat_postMessage(
                         channel = CHANNEL, # <--- CAMBIA ESTO POR EL ID REAL
-                        text = f"Numero de Orden: {order_number} - Cantidad de Items: {items}"
+                        text = f"Numero de Orden: {order_number} - Cliente: {client_name} - Cantidad de Items: {items}"
                     )
                     print("Mensaje enviado con exito")
                     #Almacenar el numero de orden
@@ -65,4 +73,4 @@ while time.time() < start + duration:
     except Exception as e:
         print(f"Error inesperado: {e}")
 
-    time.sleep(1800) #Revisa las ordenes cada 30min
+    time.sleep(2) #Revisa las ordenes cada 30min
