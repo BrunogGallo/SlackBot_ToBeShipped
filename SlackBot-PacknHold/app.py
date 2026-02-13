@@ -72,5 +72,7 @@ while time.time() < start + duration:
 
     except Exception as e:
         print(f"Error inesperado: {e}")
+        print(clients.status_code)
+        print(clients.text[:500])
 
     time.sleep(1800) #Revisa las ordenes cada 30min
