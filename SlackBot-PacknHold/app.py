@@ -16,7 +16,7 @@ def get_current_date():
     return datetime.now().strftime("%Y-%m-%dT00:00:00")
 
 start = time.time()
-duration = 28800 # Para que corra por 8hs
+duration = 30000 # Para que corra por 8hs
 todays_orders = []
 no_orders_notice = False
 
