@@ -78,7 +78,7 @@ class MintsoftOrderClient:
                 f"{self.BASE_URL}/api/Order/List",
                 headers=self.headers(),
                 params=params,
-                timeout=30,
+                timeout=60,
             )
             if r.status_code == 200:
                 all_orders.extend(r.json())
