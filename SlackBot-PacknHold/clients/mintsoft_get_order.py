@@ -62,6 +62,12 @@ class MintsoftOrderClient:
             headers=self.headers(),
             timeout=30
         )
+
+        if not r.ok:
+            print(f"Error HTTP {r.status_code}")
+            print(f"Respuesta del servidor: {r.text}")
+            return []
+        
         return r.json()
     
     def _get_orders_combined(self) -> List[Dict[str, Any]]:
