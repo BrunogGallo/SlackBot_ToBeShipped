@@ -98,8 +98,9 @@ class MintsoftOrderClient:
 
         for order in orders:
             despatch_date = order.get("RequiredDespatchDate")
+            client_id = order.get("ClientId")
 
-            if despatch_date == today: 
+            if despatch_date == today & client_id != 3: 
                 orders_to_be_despatched.append(order)
             
         return orders_to_be_despatched
