@@ -71,24 +71,40 @@ class MintsoftOrderClient:
         return r.json()
     
     def _get_orders_combined(self) -> List[Dict[str, Any]]:
-
-        status_ids = [17, 20] #Picked y Packed
+        status_ids = [17, 20]  # Picked y Packed
+        page_size = 100
+        max_pages = 1000  # safety cap
         all_orders = []
 
         for status_id in status_ids:
-            params = {
-                "Limit": 100,
-                "OrderStatusId": status_id,
-            }
-            r = requests.get(
-                f"{self.BASE_URL}/api/Order/List",
-                headers=self.headers(),
-                params=params,
-                timeout=60,
-            )
-            if r.status_code == 200:
-                all_orders.extend(r.json())
-    
+            page_no = 1
+            while page_no <= max_pages:
+                params = {
+                    "Limit": page_size,
+                    "PageNo": page_no,
+                    "OrderStatusId": status_id,
+                }
+                r = requests.get(
+                    f"{self.BASE_URL}/api/Order/List",
+                    headers=self.headers(),
+                    params=params,
+                    timeout=60,
+                )
+                if r.status_code != 200:
+                    break
+
+                batch = r.json()
+                if not batch:
+                    break
+
+                all_orders.extend(batch)
+
+                # Last page reached when we get fewer results than requested
+                if len(batch) < page_size:
+                    break
+
+                page_no += 1
+
         return all_orders
     
     
@@ -100,7 +116,14 @@ class MintsoftOrderClient:
             despatch_date = order.get("RequiredDespatchDate")
             client_id = order.get("ClientId")
 
+            if despatch_date == None:
+                continue
+                
+            print(f"{despatch_date} de orden para client {client_id}")
+
             if despatch_date == today and client_id != 3: 
                 orders_to_be_despatched.append(order)
             
         return orders_to_be_despatched
+    
+
