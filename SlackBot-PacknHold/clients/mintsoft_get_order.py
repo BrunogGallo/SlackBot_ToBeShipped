@@ -118,6 +118,9 @@ class MintsoftOrderClient:
 
             if despatch_date == None:
                 continue
+
+            if client_id == 4: # Para evitar que se mande notificacion de las ordenes de Holiday que no son Pack n Hold
+                continue
                 
             print(f"{despatch_date} de orden para client {client_id}")
 
