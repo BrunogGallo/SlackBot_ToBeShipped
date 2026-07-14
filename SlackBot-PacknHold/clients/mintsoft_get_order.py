@@ -64,8 +64,8 @@ class MintsoftOrderClient:
         page_no = 1
         while page_no <= max_pages:
             params = {
-                "Limit": page_size,
-                "PageNo": page_no,
+                "limit": page_size,
+                "pageNo": page_no,
             }
             r = requests.get(
                 f"{self.BASE_URL}/api/Client",
