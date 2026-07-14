@@ -57,18 +57,41 @@ class MintsoftOrderClient:
         }
     
     def get_clients(self) -> List[Dict[str, Any]]:
-        r = requests.get(
-            f"{self.BASE_URL}/api/Client",
-            headers=self.headers(),
-            timeout=30
-        )
+        page_size = 100  # max allowed per page by the API
+        max_pages = 1000  # safety cap
+        all_clients = []
 
-        if not r.ok:
-            print(f"Error HTTP {r.status_code}")
-            print(f"Respuesta del servidor: {r.text}")
-            return []
-        
-        return r.json()
+        page_no = 1
+        while page_no <= max_pages:
+            params = {
+                "Limit": page_size,
+                "PageNo": page_no,
+            }
+            r = requests.get(
+                f"{self.BASE_URL}/api/Client",
+                headers=self.headers(),
+                params=params,
+                timeout=30,
+            )
+
+            if not r.ok:
+                print(f"Error HTTP {r.status_code}")
+                print(f"Respuesta del servidor: {r.text}")
+                break
+
+            batch = r.json()
+            if not batch:
+                break
+
+            all_clients.extend(batch)
+
+            # Last page reached when we get fewer results than requested
+            if len(batch) < page_size:
+                break
+
+            page_no += 1
+
+        return all_clients
     
     def _get_orders_combined(self) -> List[Dict[str, Any]]:
         status_ids = [17, 20]  # Picked y Packed
