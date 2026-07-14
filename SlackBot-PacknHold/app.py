@@ -45,28 +45,40 @@ while time.time() < start + duration:
         #Si tiene algo, es que hay ordenes para despachar
         else:
             for order in orders_to_be_despatched:
-                order_id = order.get("ID")
-                order_number = order.get("OrderNumber")
-                order_client_id = order.get("ClientId")
-                items = order.get("TotalItems")
-                tracking = order.get("TrackingNumber")
+                # Aislamos cada orden: si una falla, seguimos con las demas
+                try:
+                    if order is None:
+                        print("Orden vacia (None), se omite")
+                        continue
 
-                client_info = next((c for c in clients if c.get("ID") == order_client_id), None)
-                client_name = client_info.get("Name")
+                    order_id = order.get("ID")
+                    order_number = order.get("OrderNumber")
+                    order_client_id = order.get("ClientId")
+                    items = order.get("TotalItems")
+                    tracking = order.get("TrackingNumber")
 
-                #Si hoy no se envio un mensaje al canal para esa orden:
-                if order_number not in todays_orders:
-                    CLIENT.chat_postMessage(
-                        channel = CHANNEL, # <--- CAMBIA ESTO POR EL ID REAL
-                        text = f"Numero de Orden: {order_number} - Cliente: {client_name} - Cantidad de Items: {items} - Tracking: {tracking}"
-                    )
-                    print("Mensaje enviado con exito")
-                    #Almacenar el numero de orden
-                    todays_orders.append(order_number)
-                    time.sleep(1)
+                    client_info = next((c for c in clients if c and c.get("ID") == order_client_id), None)
+                    # Si no encontramos el cliente, no cortamos: usamos un valor por defecto
+                    client_name = client_info.get("Name") if client_info else "Desconocido"
 
-                else:
-                    print(f"Mensaje ya enviado para la orden {order_number}")
+                    #Si hoy no se envio un mensaje al canal para esa orden:
+                    if order_number not in todays_orders:
+                        CLIENT.chat_postMessage(
+                            channel = CHANNEL, # <--- CAMBIA ESTO POR EL ID REAL
+                            text = f"Numero de Orden: {order_number} - Cliente: {client_name} - Cantidad de Items: {items} - Tracking: {tracking}"
+                        )
+                        print("Mensaje enviado con exito")
+                        #Almacenar el numero de orden
+                        todays_orders.append(order_number)
+                        time.sleep(1)
+
+                    else:
+                        print(f"Mensaje ya enviado para la orden {order_number}")
+
+                except SlackApiError as e:
+                    print(f"Error de Slack API en orden {order.get('OrderNumber') if order else '?'}: {e.response['error']}")
+                except Exception as e:
+                    print(f"Error inesperado en orden {order.get('OrderNumber') if order else '?'}: {e}")
 
     except SlackApiError as e:
         print(f"Error de Slack API: {e.response['error']}")
@@ -75,3 +87,4 @@ while time.time() < start + duration:
         print(f"Error inesperado: {e}")
 
     time.sleep(1800) #Revisa las ordenes cada 30min
+
