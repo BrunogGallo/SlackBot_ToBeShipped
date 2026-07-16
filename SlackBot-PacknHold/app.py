@@ -56,6 +56,8 @@ while time.time() < start + duration:
                     order_client_id = order.get("ClientId")
                     items = order.get("TotalItems")
                     tracking = order.get("TrackingNumber")
+                    channel = order.get("Channel")
+                    channel_name = channel.get("Name")
 
                     client_info = next((c for c in clients if c and c.get("ID") == order_client_id), None)
                     # Si no encontramos el cliente, no cortamos: usamos un valor por defecto
@@ -65,7 +67,7 @@ while time.time() < start + duration:
                     if order_number not in todays_orders:
                         CLIENT.chat_postMessage(
                             channel = CHANNEL, # <--- CAMBIA ESTO POR EL ID REAL
-                            text = f"Numero de Orden: {order_number} - Cliente: {client_name} - Cantidad de Items: {items} - Tracking: {tracking}"
+                            text = f"Numero de Orden: {order_number} - Cliente: {client_name} - Cantidad de Items: {items} - Tracking: {tracking} - Channel: {channel_name}"
                         )
                         print("Mensaje enviado con exito")
                         #Almacenar el numero de orden
