@@ -94,7 +94,7 @@ class MintsoftOrderClient:
         return all_clients
     
     def _get_orders_combined(self) -> List[Dict[str, Any]]:
-        status_ids = [17, 20]  # Picked y Packed
+        status_ids = [14, 17, 20]  # Pack and Hold, Picked y Packed
         page_size = 100
         max_pages = 1000  # safety cap
         all_orders = []
