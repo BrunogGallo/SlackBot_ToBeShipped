@@ -138,11 +138,12 @@ class MintsoftOrderClient:
         for order in orders:
             despatch_date = order.get("RequiredDespatchDate")
             client_id = order.get("ClientId")
+            channel_id = order.get("ChannelId")
 
             if despatch_date == None:
                 continue
 
-            if client_id == 4: # Para evitar que se mande notificacion de las ordenes de Holiday que no son Pack n Hold
+            if client_id == 4 and channel_id == 60: # Para evitar que se mande notificacion de las ordenes de Holiday que no son Pack n Hold
                 continue
                 
             print(f"{despatch_date} de orden para client {client_id}")
